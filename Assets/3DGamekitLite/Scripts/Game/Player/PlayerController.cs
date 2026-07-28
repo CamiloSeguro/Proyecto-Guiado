@@ -18,8 +18,6 @@ namespace Gamekit3D
         public float jumpSpeed = 10f;             // How fast Ellen takes off when jumping.
         public float minTurnSpeed = 400f;         // How fast Ellen turns when moving at maximum speed.
         public float maxTurnSpeed = 1200f;        // How fast Ellen turns when stationary.
-        public float mouseYawSensitivity = 3f;    // How much Ellen turns per unit of mouse X movement.
-        public float keyTurnSpeed = 200f;         // How fast Ellen turns per second when A/D are held.
         public float idleTimeout = 5f;            // How long before Ellen starts considering random idles.
         public bool canAttack;                    // Whether or not Ellen can swing her staff.
 
@@ -267,9 +265,8 @@ namespace Gamekit3D
             if (moveInput.sqrMagnitude > 1f)
                 moveInput.Normalize();
 
-            // W/S drive forward/backward speed directly; A/D turn Ellen instead of strafing
-            // (see SetTargetRotation), since this asset has no sideways-walk animation.
-            m_DesiredForwardSpeed = moveInput.y * maxForwardSpeed;
+            // Calculate the speed intended by input.
+            m_DesiredForwardSpeed = moveInput.magnitude * maxForwardSpeed;
 
             // Determine change to speed based on whether there is currently any move input.
             float acceleration = IsMoveInput ? k_GroundAcceleration : k_GroundDeceleration;
@@ -326,13 +323,27 @@ namespace Gamekit3D
         // Called each physics step to set the rotation Ellen is aiming to have.
         void SetTargetRotation()
         {
-            // Ellen's facing is driven directly by the mouse (yaw) and by A/D as an
-            // additional turn input, rather than by movement direction. The camera has
-            // no input of its own (it just trails behind Ellen via Simple Follow), so
-            // deriving facing from movement direction/camera would create a feedback loop.
-            float yawDelta = m_Input.CameraInput.x * mouseYawSensitivity;
-            yawDelta += m_Input.MoveInput.x * keyTurnSpeed * Time.deltaTime;
-            Quaternion targetRotation = transform.rotation * Quaternion.Euler(0f, yawDelta, 0f);
+            // Create three variables, move input local to the player, flattened forward direction of the camera and a local target rotation.
+            Vector2 moveInput = m_Input.MoveInput;
+            Vector3 localMovementDirection = new Vector3(moveInput.x, 0f, moveInput.y).normalized;
+            
+            Vector3 forward = Quaternion.Euler(0f, cameraSettings.Current.m_XAxis.Value, 0f) * Vector3.forward;
+            forward.y = 0f;
+            forward.Normalize();
+
+            Quaternion targetRotation;
+            
+            // If the local movement direction is the opposite of forward then the target rotation should be towards the camera.
+            if (Mathf.Approximately(Vector3.Dot(localMovementDirection, Vector3.forward), -1.0f))
+            {
+                targetRotation = Quaternion.LookRotation(-forward);
+            }
+            else
+            {
+                // Otherwise the rotation should be the offset of the input from the camera's forward.
+                Quaternion cameraToInputOffset = Quaternion.FromToRotation(Vector3.forward, localMovementDirection);
+                targetRotation = Quaternion.LookRotation(cameraToInputOffset * forward);
+            }
 
             // The desired forward direction of Ellen.
             Vector3 resultingForward = targetRotation * Vector3.forward;
