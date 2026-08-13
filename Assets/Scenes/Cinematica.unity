@@ -15791,6 +15791,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ===== PlayerAssets =====
       objectReference: {fileID: 0}
+    - target: {fileID: 3512488975357030042, guid: a710be42235ab014a8543af44d198f8d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3748472804934118675, guid: a710be42235ab014a8543af44d198f8d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -22.87
@@ -15831,9 +15835,17 @@ PrefabInstance:
       propertyPath: m_BackGroundColor.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5338545733516302318, guid: a710be42235ab014a8543af44d198f8d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5917929689931083828, guid: a710be42235ab014a8543af44d198f8d, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 185b725067828744888e78635a1ae182, type: 2}
     - target: {fileID: 6431579412364868376, guid: a710be42235ab014a8543af44d198f8d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -30.115215
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 6431579412364868376, guid: a710be42235ab014a8543af44d198f8d, type: 3}
       propertyPath: m_LocalPosition.y
