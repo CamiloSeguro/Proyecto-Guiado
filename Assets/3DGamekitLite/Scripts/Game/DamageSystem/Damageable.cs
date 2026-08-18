@@ -65,6 +65,17 @@ namespace Gamekit3D
             OnResetDamage.Invoke();
         }
 
+        public void Heal(int amount)
+        {
+            if (currentHitPoints <= 0)
+            {
+                return;
+            }
+
+            currentHitPoints = Mathf.Min(currentHitPoints + amount, maxHitPoints);
+            OnResetDamage.Invoke();
+        }
+
         public void SetColliderState(bool enabled)
         {
             m_Collider.enabled = enabled;
